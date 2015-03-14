@@ -1,4 +1,4 @@
-package main
+package bloomfilter
 
 import (
 	"fmt"
@@ -13,26 +13,6 @@ type BloomFilter struct {
 	Size         uint32
 	HashFuncs    []Hash32Fn
 	TotalFlipped uint32
-}
-
-func main() {
-	b := NewBloomFilter(15)
-	b.Add("dog")
-	t1 := "cat"
-	t2 := "dog"
-	r1 := b.Exists(t1)
-	r2 := b.Exists(t2)
-	displayResult(b, t1, r1)
-	displayResult(b, t2, r2)
-}
-
-func displayResult(b *BloomFilter, s string, exists bool) {
-	fmt.Println("Probability of false positives:", b.getFalsePositiveProbability())
-	if !exists {
-		fmt.Println("Input", s, "is certainly not in the filter.")
-	} else {
-		fmt.Println("Input", s, "might be in the filter.")
-	}
 }
 
 // NewBloomFilter creates a new BloomFilter of the specified size.
@@ -64,12 +44,12 @@ func (b *BloomFilter) getIndex32(s string, hashFn Hash32Fn) uint32 {
 
 // Add a string to the Bloom filter.
 func (b *BloomFilter) Add(s string) {
-	fmt.Println(s)
-	for _, j := range b.HashFuncs {
+	fmt.Println("\nAdding:", s)
+	for i, j := range b.HashFuncs {
 		idx := b.getIndex32(s, j)
-		fmt.Println(idx)
+		fmt.Println("Hash function #", i, "hashed to index:", idx)
 		b.Filter[idx] = true
-		fmt.Println(b.Filter)
+		fmt.Println("Updated filter to:", b.Filter)
 		b.TotalFlipped++
 	}
 }
@@ -97,10 +77,19 @@ func (b *BloomFilter) Exists(s string) bool {
 // The number of true cells in the filter,
 // divided by the length of the filter,
 // to the power of the number of hash functions.
-func (b *BloomFilter) getFalsePositiveProbability() float64 {
+func (b *BloomFilter) GetFalsePositiveProbability() float64 {
 	x := float64(b.TotalFlipped) / float64(b.Size)
 	y := float64(len(b.HashFuncs))
 	z := math.Pow(x, y) * 100
 	p := math.Floor(z + .5)
 	return p
+}
+
+func round(f float64) float64 {
+	return math.Floor(f + .5)
+}
+
+func roundPlus(f float64, places int) float64 {
+	shift := math.Pow(10, float64(places))
+	return round(f*shift) / shift
 }
