@@ -1,3 +1,4 @@
+// Package bloomfilter provides a bloom filter.
 package bloomfilter
 
 import (
@@ -6,8 +7,10 @@ import (
 	"math"
 )
 
+// Hash32Fn is a function type for 32 bit hashing functions.
 type Hash32Fn func(string) uint32
 
+// BloomFilter is the public struct.
 type BloomFilter struct {
 	Filter       []bool
 	Size         uint32
@@ -20,16 +23,19 @@ func NewBloomFilter(filterSize uint32) *BloomFilter {
 	b := BloomFilter{}
 	b.Filter = make([]bool, filterSize)
 	b.Size = filterSize
+	// TODO: inject preferred choice of hashers.
 	b.HashFuncs = []Hash32Fn{hashFnv1, hashFnv1a}
 	return &b
 }
 
+// hashFnv1 puts a string through the golang stdlib 32-bit FNV-1 hash.
 func hashFnv1(s string) uint32 {
 	h := fnv.New32()
 	h.Write([]byte(s))
 	return h.Sum32()
 }
 
+// hashFnv1a puts a string through the golang stdlib 32-bit FNV-1a hash.
 func hashFnv1a(s string) uint32 {
 	h := fnv.New32a()
 	h.Write([]byte(s))
@@ -83,13 +89,4 @@ func (b *BloomFilter) GetFalsePositiveProbability() float64 {
 	z := math.Pow(x, y) * 100
 	p := math.Floor(z + .5)
 	return p
-}
-
-func round(f float64) float64 {
-	return math.Floor(f + .5)
-}
-
-func roundPlus(f float64, places int) float64 {
-	shift := math.Pow(10, float64(places))
-	return round(f*shift) / shift
 }

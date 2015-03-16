@@ -6,8 +6,9 @@ import (
 )
 
 func main() {
-	// Add some items to the filter.
+	// Create a new BloomFilter.
 	b := bloomfilter.NewBloomFilter(22)
+	// Add some items to the filter.
 	b.Add("cat")
 	b.Add("dog")
 	b.Add("Mars")
