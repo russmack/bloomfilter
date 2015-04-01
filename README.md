@@ -3,6 +3,7 @@
 A bloom filter written in golang.
 
 ![Progress](http://progressed.io/bar/100?title=done)
+[![Build Status](https://travis-ci.org/russmack/bloomfilter.svg?branch=master)](https://travis-ci.org/russmack/bloomfilter)
 
 ---
 #### Status: Done.
