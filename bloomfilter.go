@@ -19,11 +19,44 @@ type Hash32Fn func(string) uint32
 
 // BloomFilter is the public struct.
 type BloomFilter struct {
-	// TODO: use bits, not bools.
-	Filter       []bool
+	Filter       []byte
 	Size         uint32
 	HashFuncs    []Hash32Fn
 	TotalFlipped uint32
+}
+
+func (b *BloomFilter) SetTrue(i uint32) {
+	bitByte := byteFromBitIndex(i)
+	i = offsetBitIndex(i)
+	b.Filter[bitByte] |= 1 << i
+}
+
+func (b *BloomFilter) Get(i uint32) bool {
+	bitByte := byteFromBitIndex(i)
+	r := b.Filter[bitByte]
+
+	i = offsetBitIndex(i)
+	isSet := r & (1 << i)
+
+	if isSet != 0 {
+		return true
+	}
+	return false
+}
+
+// byteFromBitIndex returns the index in the []byte of the byte
+// which contains the specified bit.
+func byteFromBitIndex(i uint32) uint32 {
+	relevantByte := i / 8
+	return relevantByte
+}
+
+// offsetBitIndex returns the index of the specified bit in its byte of the []byte.
+func offsetBitIndex(i uint32) uint32 {
+	if i >= 8 {
+		i = i % 8
+	}
+	return i
 }
 
 // NewBloomFilter creates a new BloomFilter with the specified number of switches,
@@ -31,7 +64,7 @@ type BloomFilter struct {
 // when checking for existence.
 func NewBloomFilter(filterSize uint32) *BloomFilter {
 	b := BloomFilter{}
-	b.Filter = make([]bool, filterSize)
+	b.Filter = make([]byte, filterSize/8+1)
 	b.Size = filterSize
 	// TODO: inject preferred choice of hashers.
 	b.HashFuncs = []Hash32Fn{hashFnv1, hashFnv1a}
@@ -68,7 +101,8 @@ func (b *BloomFilter) Add(s string) {
 	for i, j := range b.HashFuncs {
 		idx := b.getIndex32(s, j)
 		fmt.Println("Hash function #", i, "hashed to index:", idx)
-		b.Filter[idx] = true
+		b.SetTrue(idx)
+
 		fmt.Println("Updated filter to:", b.Filter)
 		b.TotalFlipped++
 	}
@@ -82,9 +116,9 @@ func (b *BloomFilter) Exists(s string) bool {
 	results := make([]bool, len(b.HashFuncs))
 	for i, j := range b.HashFuncs {
 		idx := b.getIndex32(s, j)
-		val := b.Filter[idx]
-		results[i] = val
+		results[i] = b.Get(idx)
 	}
+
 	allTrue := true
 	// Iterate over the switch values retrieved from the bloom filter.
 	for _, j := range results {
