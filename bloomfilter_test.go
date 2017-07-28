@@ -42,3 +42,50 @@ func Test_Exists(t *testing.T) {
 		}
 	}
 }
+
+func Benchmark_Add(b *testing.B) {
+	b.ReportAllocs()
+
+	// Strings to add to the filter as sample existing data.
+	loadStrings := []string{
+		"cat", "dog", "mate", "frog", "moose",
+		"el capitan", "spruce goose"}
+
+	f := NewBloomFilter(15)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		for _, j := range loadStrings {
+			f.Add(j)
+		}
+	}
+}
+
+func Benchmark_Exists(b *testing.B) {
+	b.ReportAllocs()
+
+	checkStrings := []string{
+		"klingon", "frog", "donkey",
+		"tame", "spruce goose", "light speed",
+	}
+
+	f := NewBloomFilter(15)
+
+	// Strings to add to the filter as sample existing data.
+	loadStrings := []string{
+		"cat", "dog", "mate", "frog", "moose",
+		"el capitan", "spruce goose"}
+
+	for _, j := range loadStrings {
+		f.Add(j)
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		for _, j := range checkStrings {
+			_ = f.Exists(j)
+		}
+	}
+
+}
