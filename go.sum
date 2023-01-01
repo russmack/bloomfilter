@@ -1,0 +1,4 @@
+github.com/russmack/bitarray-go v0.0.0-20170730163431-87a6424ad840 h1:09EiBKHT71riBlNPPVlgx1Bb+osxemKyF9/+6uDULmw=
+github.com/russmack/bitarray-go v0.0.0-20170730163431-87a6424ad840/go.mod h1:0ZiPj38vaWFzlfLwHUEcFqowLdcYqKEO20SL430w9VA=
+github.com/russmack/bloomfilter v0.0.0-20170728185821-1ba2446bb260 h1:R0lsHjvBS9axQhdnEOtTWK3gMaLWSFRfZItQGHiV7+g=
+github.com/russmack/bloomfilter v0.0.0-20170728185821-1ba2446bb260/go.mod h1:ibxenKCuhyl+yTWDNswoEG8JEtexFl1TXYmm5Wh8On4=

@@ -1,7 +1,7 @@
 // Package bloomfilter provides a bloom filter.
 // A Bloom filter provides a quick and memory-efficient, probabilistic check for
 // the existence of a member in a set.
-// The efficiency comes at the speed of certainty.
+// The efficiency comes at the cost of certainty.
 // False positives are possible, wrongly indicating that an element is in the set,
 // ie that the element is possibly in the set.
 // False negatives are not possible - if the filter indicates that an element is
@@ -12,7 +12,7 @@ import (
 	"hash/fnv"
 	"math"
 
-	"github.com/russmack/bitarray-go"
+	bitarraygo "github.com/russmack/bitarray-go"
 )
 
 // Hash32Fn is a function type for 32 bit hashing functions.
